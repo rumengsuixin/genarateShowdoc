@@ -79,11 +79,13 @@ void analysisJson<T, C>::recursion(T* jsondata, std::vector<std::string>* veclis
 		std::vector<std::string> temp;// 用以临时保存key容器状态( 局部变量 )
 		T ison;// 用以临时保存 jsondata 子（json / my_json）对象( 局部变量 )
 
+		(*cb)(Gd);// callback
+
 		for (auto& i : jsondata->items()) {
-			// 处理 json 子对象
+
 			ison = i.value();
 
-			// 将自己的key添加进容器
+
 			if (jsondata->is_object()) {
 				WriteIn(veclist, i.key(), ison,Gd, cb);
 			}
@@ -116,8 +118,9 @@ void analysisJson<T, C>::WriteIn(std::vector<std::string>* veclist, std::string 
 {
 
 	(*veclist).push_back(key);
+
 	if (ison.is_string() || ison.is_number_integer()) {
-		//stdlog(*veclist);//打印容器
+
 		(*cb)(Gd);// callback
 
 		veclist->pop_back();// 移除自己

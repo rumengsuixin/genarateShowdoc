@@ -102,7 +102,8 @@ static void stdlog(void* arg) {
 	auto v = *gd->getVeclist();
 	auto iter = v.begin();
 
-	
+
+
 	string str = parameterLine(iter,&v,gd);
 	*gd->getOutfile() << str.c_str() << endl;// Ð´ÈëÎÄ¼þ
 };

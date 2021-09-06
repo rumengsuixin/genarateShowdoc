@@ -39,30 +39,25 @@ string entryType(my_json* arg) {
 
 my_json get_(my_json* example, vector<string>* v) {
 
-	vector<string>::iterator iter = v->begin();
 	my_json result;
-	int counter = 0;
+
 	for (auto& iter : *v) {
-	
-		if (counter == 0) {
+
+		if (result.is_null()) {
+			// result 初始化
 			if (example->is_object()) {
-				result = (*example)[iter];
+				result = (*example)[*v->begin()];
 			}
-			if (example->is_array()) {
-				result = (*example)[0];
-			}
+			// else
 		}
 		else {
 			if (result.is_object()) {
 				result = result[iter];
 			}
-			if (result.is_array()) {
-				result = result[0];
+			else if (result.is_array()) {
+				result = result[0][iter];
 			}
 		}
-
-		counter ++;
-		
 	}
 
 	return result;
@@ -72,13 +67,14 @@ my_json get_(my_json* example, vector<string>* v) {
 string parameterLine(vector<string>::iterator& iter, vector<string>* v, GenerateDocument<my_json>* Gd) {
 
 	my_json* example = Gd->getExample();
-	my_json tempjson;
+	my_json tempjson;// 使用 tempjson 来获取key表达的值
 	string result;
+	
+
 
 	// 获取该条规则最终指向值
 	tempjson = get_(example, v);
 	
-
 	result.append("|");
 	for (; iter < v->end(); )
 	{
@@ -89,6 +85,7 @@ string parameterLine(vector<string>::iterator& iter, vector<string>* v, Generate
 		}
 	}
 	result.append("|");
+
 
 	result.append(entryType(&tempjson));
 	result.append("|");
@@ -111,10 +108,6 @@ static void stdlog(void* arg) {
 
 
 int main(){
-
-
-
-
 
 
 

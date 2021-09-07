@@ -132,19 +132,20 @@ void GenerateDocument<T>::parseAndWrite(callback cb) {
 		std::string::const_iterator iter_begin = flush.cbegin();
 		std::string::const_iterator iter_end = flush.cend();
 
-
+		// 循环正则匹配 一直到没有结果
 		while (regex_search(iter_begin, iter_end, result, *pattern)) {
 			//temp.append(result.prefix());
-			outfile << result.prefix();
+			outfile << result.prefix(); // 写入本条匹配结果的前一段内容
 			type = (int)(*config)[result[1]]["type"];
 
 
+
+			// 根据类型写入期望值
 			switch (type) {
 			case 2:// 请求参数
 				outfile << (*config)[result[1]]["value"].dump(4);
 				break;
 			case 3:// 返回参数
-				// type 3
 				// 递归解析json 到返回参数列表中
 				tj->recursion(this->getExample(), this->getVeclist(), this, cb);// 把写入权交给 stdlog 函数
 				break;
@@ -160,10 +161,10 @@ void GenerateDocument<T>::parseAndWrite(callback cb) {
 
 		}
 		//temp.append(result.suffix());// 最后一段
-		outfile << result.suffix();
+		outfile << result.suffix(); // 写入本条匹配结果后一段的内容
 
 		//outfile << temp << std::endl;// 写入一行
-		outfile << std::endl;// 写入一行
+		outfile << std::endl;// 写入换行符
 	}
 	else {
 

@@ -34,19 +34,20 @@ public:
 
 	// configure
 	void example(void);
-
-
+	
+	void analysisResponsedata(C* Gd);
 	// recursion
-	void recursion(T* jsondata, std::vector<std::string>* veclist,C* Gd, callback cb);
+	void recursion(T* jsondata, C* Gd);
 	void recursion(T* jsondata);
 
-	void WriteIn(std::vector<std::string>* veclist, std::string key, T& ison,C* Gd, callback cb);
-
+	void structCall(C* Gd);
 
 
 private:
 	T* jsondata;
-	T* tempjArr;
+	T* tempjArr;// 用于存放临时json数组的变量
+	T* tempj;// 用于存放临时json结构的变量
+	std::vector<std::string> vectemp;// 用于存放临时字符串的容器
 	void initialization(void);
 
 

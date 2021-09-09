@@ -26,7 +26,12 @@ private:
 	std::string flush;
 	std::ifstream buffer;
 	std::ofstream outfile;
-	std::vector<string> veclist;
+
+	std::vector<string> veclist;// 字符串容器（程序执行时，由于json解析器递归调用而变化）
+
+
+
+	callback structCallback; // json结构回调函数指针
 
 
 
@@ -36,15 +41,16 @@ private:
 
 
 public:
-	GenerateDocument(void);
+	GenerateDocument(callback cb);
 	~GenerateDocument(void);
-	void start(callback cb);// 开始从文件流逐条读取数据
+	void start();// 开始从文件流逐条读取数据
 	T* getConfig(void);
 	T* getExample(void);
 
 
 	ofstream* getOutfile(void);
 	std::vector<string>* getVeclist(void);
+	callback getStructCallback(void);
 
 };
 

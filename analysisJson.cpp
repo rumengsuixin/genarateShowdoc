@@ -39,12 +39,16 @@ analysisJson<T, C>::analysisJson(std::ifstream* stream)
 template <typename T,typename C>
 analysisJson<T, C>::~analysisJson(void)
 {
+	// 回收堆内存
 	if (jsondata) {
 		delete jsondata;
 	}
 	if (tempjArr) {
 		delete tempjArr;
 	}
+	//if (tempj) {
+	//	delete tempj;
+	//}
 	
 }
 template <typename T, typename C>
@@ -65,48 +69,63 @@ void analysisJson<T, C>::initialization(void) {
 	// 初始化需要用到的堆空间
 	jsondata = new T;
 	tempjArr = new T;
+	//tempj = new T;
 }
 
+template<typename T, typename C>
+void analysisJson<T, C>::analysisResponsedata(C* Gd)
+{
+	this->recursion(Gd->getExample(), Gd);//递归解析，并将结果传给回调函数
+}
+
+
 template <typename T,typename C>
-void analysisJson<T, C>::recursion(T* jsondata, std::vector<std::string>* veclist,C* Gd,callback cb) {
+void analysisJson<T, C>::recursion(T* jsondata,C* Gd) {
 
 	// 遇数组则选第一个当作示例直接进入下一个递归
 	if (jsondata->is_array()) {
-		recursion(&((*jsondata)[0]), veclist,Gd, cb);
+		recursion(&((*jsondata)[0]) ,Gd);
 	}
 	else {
-	
-		std::vector<std::string> temp;// 用以临时保存key容器状态( 局部变量 )
-		T ison;// 用以临时保存 jsondata 子（json / my_json）对象( 局部变量 )
 
-		(*cb)(Gd);// callback
+		structCall(Gd);// 调用一次回调函数
 
 		for (auto& i : jsondata->items()) {
 
-			ison = i.value();
+	
+			tempj = &(i.value());// 临时 json 结构值发生变化
 
 
 			if (jsondata->is_object()) {
-				WriteIn(veclist, i.key(), ison,Gd, cb);
+
+				(*Gd->getVeclist()).push_back(i.key());// 往容器内添加一个成员，成员为当前 key
+
+				if (tempj->is_string() || tempj->is_number_integer()) {
+
+					structCall(Gd);// 调用一次回调函数
+
+					Gd->getVeclist()->pop_back();// 弹出最近添加进容器的一个成员
+				}
+
 			}
 			
 
-			if (ison.is_object())// 对象
+			if (tempj->is_object())// 对象
 			{
-				recursion(&ison, veclist,Gd, cb);
-				if (!veclist->empty()) {
-					veclist->pop_back();
+				recursion(tempj, Gd);
+				if (!Gd->getVeclist()->empty()) {
+					Gd->getVeclist()->pop_back();
 				}
 			}
 
-			if (ison.is_array())// 数组
+			if (tempj->is_array())// 数组
 			{
 
-				temp = *veclist;// 此处应该保留vector容器状态
-				temp.pop_back();// 移除最新添加的一个成员
-				recursion(&ison[0], veclist,Gd, cb);
-				veclist->clear();// 递归数组完成之后清除容器
-				*veclist = temp;// 恢复
+				vectemp = *Gd->getVeclist();// 此处应该保留vector容器状态
+				vectemp.pop_back();// 移除最新添加的一个成员
+				recursion(&(*tempj)[0], Gd);// 递归数组第一个成员
+				Gd->getVeclist()->clear();// 递归数组完成之后清除容器
+				*Gd->getVeclist() = vectemp;// 恢复
 			}
 		}
 	
@@ -114,19 +133,14 @@ void analysisJson<T, C>::recursion(T* jsondata, std::vector<std::string>* veclis
 }
 
 template<typename T, typename C>
-void analysisJson<T, C>::WriteIn(std::vector<std::string>* veclist, std::string key, T& ison,C* Gd, callback cb)
+void analysisJson<T, C>::structCall(C* Gd)
 {
-
-	(*veclist).push_back(key);
-
-	if (ison.is_string() || ison.is_number_integer()) {
-
-		(*cb)(Gd);// callback
-
-		veclist->pop_back();// 移除自己
+	if (!Gd->getVeclist()->empty()) {
+		(*Gd->getStructCallback())(Gd);// callback
 	}
-	
 }
+
+
 
 
 
@@ -138,6 +152,7 @@ void analysisJson<T, C>::example(void) {
 	//std::cout << this->getJson()->dump(4) << std::endl;
 
 }
+
 
 template <typename T, typename C>
 void analysisJson<T, C>::recursion(T* jd) {

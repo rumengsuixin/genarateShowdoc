@@ -10,9 +10,9 @@ const std::string sourceUrl = "http://ynysxy01.com/lotynnf/loto";
 
 
 template<typename T>
-GenerateDocument<T>::GenerateDocument(void) {
+GenerateDocument<T>::GenerateDocument(callback cb) {
 	
-	
+	structCallback = cb;// 结构回调
 
 	//// 打开文件流
 	buffer.open(configPath);// 只读方式打开配置文件
@@ -30,6 +30,7 @@ GenerateDocument<T>::GenerateDocument(void) {
 	//正则对象
 	pattern = new std::regex("\\{([a-zA-Z]{1,})\\}");
 
+
 }
 template<typename T>
 GenerateDocument<T>::~GenerateDocument(void) {
@@ -40,7 +41,7 @@ GenerateDocument<T>::~GenerateDocument(void) {
 	if (outfile.is_open()) {
 		outfile.close();
 	}
-	// 释放json解析器堆内存
+	// 回收堆内存
 	if (ajson) {
 		delete ajson;
 	}
@@ -63,7 +64,8 @@ GenerateDocument<T>::~GenerateDocument(void) {
 
 // 开始运行函数
 template<typename T>
-void GenerateDocument<T>::start(callback cb) {
+void GenerateDocument<T>::start(void) {
+
 
 
 	// read config into GenerateDocument of instance
@@ -108,14 +110,12 @@ void GenerateDocument<T>::start(callback cb) {
 			}
 		}
 	}
-
-
 	// config 结合 请求者数据初始化完毕
 
 
 	// 逐行读取并进行解析和写入
 	while (getline(buffer, flush)) {
-		parseAndWrite(cb);
+		parseAndWrite(this->getStructCallback());
 	}
 }
 
@@ -146,8 +146,7 @@ void GenerateDocument<T>::parseAndWrite(callback cb) {
 				outfile << (*config)[result[1]]["value"].dump(4);
 				break;
 			case 3:// 返回参数
-				// 递归解析json 到返回参数列表中
-				tj->recursion(this->getExample(), this->getVeclist(), this, cb);// 把写入权交给 stdlog 函数
+				tj->analysisResponsedata(this);// 解析响应数据
 				break;
 			case 4:// 示例
 				outfile << (*config)[result[1]]["value"].dump(4);
@@ -203,6 +202,13 @@ std::vector<string>* GenerateDocument<T>::getVeclist(void) {
 
 }
 
+
+template<typename T>
+callback GenerateDocument<T>::getStructCallback(void) {
+
+	return structCallback;
+
+}
 
 
 // 检索是否含有

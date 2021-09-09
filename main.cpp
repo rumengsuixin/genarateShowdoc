@@ -101,6 +101,7 @@ static void stdlog(void* arg) {
 
 
 
+
 	string str = parameterLine(iter,&v,gd);
 	*gd->getOutfile() << str.c_str() << endl;// Ð´ÈëÎÄ¼þ
 };
@@ -113,8 +114,11 @@ int main(){
 
 
 
-	GenerateDocument<my_json> gd;
-	gd.start(stdlog);
+
+
+
+	GenerateDocument<my_json> gd(stdlog);
+	gd.start();
 
 	return 0;
 

@@ -100,7 +100,7 @@ void analysisJson<T, C>::recursion(T* jsondata,C* Gd) {
 
 				(*Gd->getVeclist()).push_back(i.key());// 往容器内添加一个成员，成员为当前 key
 
-				if (tempj->is_string() || tempj->is_number_integer()) {
+				if (tempj->is_string() || tempj->is_number_integer() || tempj->is_null()) {// 到达一个叶子（没有子成员的）节点
 
 					structCall(Gd);// 调用一次回调函数
 

@@ -30,6 +30,9 @@ string entryType(my_json* arg) {
 	{
 		result = "int";
 	}
+	else if (arg->is_null()) {
+		result = "string";
+	}
 	else {
 		result = "unknown";
 	}
@@ -109,6 +112,8 @@ static void stdlog(void* arg) {
 
 
 int main(){
+
+
 
 
 

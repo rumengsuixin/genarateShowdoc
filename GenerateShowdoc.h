@@ -18,6 +18,7 @@ class GenerateDocument {
 private:
 	//T* config;
 	analysisJson<T, GenerateDocument>* ajson;// config json 解析器
+	analysisJson<T, GenerateDocument>* fieldJson;// field json 解析器
 	analysisJson<T, GenerateDocument>* tj;// return data json 解析器
 	Requester* requester;// 请求器
 	T* config;// 配置
@@ -45,6 +46,7 @@ public:
 	~GenerateDocument(void);
 	void start();// 开始从文件流逐条读取数据
 	T* getConfig(void);
+	T* getFieldConfig(void);
 	T* getExample(void);
 
 

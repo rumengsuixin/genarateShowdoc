@@ -4,8 +4,9 @@
 
 const std::string templatePath = "E:\\showdoc\\showdoc.template";
 const std::string configPath = "E:\\showdoc\\config.json";
+const std::string fieldPath = "E:\\showdoc\\field.json";
 const std::string outPath = "E:\\showdoc\\out.txt";
-const std::string sourceUrl = "http://ynysxy01.com/lotynnf/loto";
+
 
 
 
@@ -18,6 +19,14 @@ GenerateDocument<T>::GenerateDocument(callback cb) {
 	buffer.open(configPath);// 只读方式打开配置文件
 	
 	ajson = new analysisJson<T, GenerateDocument<T>>(&buffer); // json 解析器
+
+	buffer.close();// 关闭文件流
+	buffer.clear();// 清除文件流状态
+	buffer.open(fieldPath);// 只读方式打开字段配置文件
+	fieldJson = new analysisJson<T, GenerateDocument<T>>(&buffer); // field json 解析器
+
+
+
 	tj = new analysisJson<T, GenerateDocument<T>>; // 响应体 json 解析器
 	requester = new Requester;// 请求器
 	config = new T;
@@ -44,6 +53,9 @@ GenerateDocument<T>::~GenerateDocument(void) {
 	// 回收堆内存
 	if (ajson) {
 		delete ajson;
+	}
+	if (fieldJson) {
+		delete fieldJson;
 	}
 	if (tj) {
 		delete tj;
@@ -179,6 +191,11 @@ template<typename T>
 T* GenerateDocument<T>::getConfig(void)
 {
 	return config;
+}
+template<typename T>
+T* GenerateDocument<T>::getFieldConfig(void)
+{
+	return fieldJson->getJson();
 }
 
 template<typename T>

@@ -40,6 +40,8 @@ string entryType(my_json* arg) {
 }
 
 
+
+
 my_json get_(my_json* example, vector<string>* v) {
 
 	my_json result;
@@ -87,12 +89,24 @@ string parameterLine(vector<string>::iterator& iter, vector<string>* v, Generate
 			result.append(".");
 		}
 	}
+	// Data type
 	result.append("|");
-
-
 	result.append(entryType(&tempjson));
 	result.append("|");
-	result.append("\t");
+
+
+	// Data remarks
+
+
+	if (Gd->getFieldConfig()->contains(*(iter - 1))) { // 能在json中找到索引
+
+		result.append(Gd->getFieldConfig()->at(*(iter - 1)));
+	}
+	else {
+		result.append("\t");
+	}
+
+
 	result.append("|");
 	return result;
 }
@@ -103,20 +117,15 @@ static void stdlog(void* arg) {
 	auto iter = v.begin();
 
 
-
-
 	string str = parameterLine(iter,&v,gd);
 	*gd->getOutfile() << str.c_str() << endl;// 写入文件
 };
 
 
 
+
 int main(){
-
-
-
-
-
+	
 
 
 

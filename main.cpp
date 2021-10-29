@@ -41,13 +41,11 @@ string entryType(my_json* arg) {
 
 
 
-
-my_json get_(my_json* example, vector<string>* v) {
+// 获取矢量数组对应示例最终json对象
+my_json get_(my_json* example, vector<string>* v, bool isLeaf) {
 
 	my_json result;
-
 	for (auto& iter : *v) {
-
 		if (result.is_null()) {
 			// result 初始化
 			if (example->is_object()) {
@@ -60,26 +58,40 @@ my_json get_(my_json* example, vector<string>* v) {
 				result = result[iter];
 			}
 			else if (result.is_array()) {
-				result = result[0][iter];
+				if (result[0].is_object()) {
+					result = result[0][iter];
+				}
+				else {
+					result = result[0];
+				}
 			}
 		}
+	}
+
+
+	// 再进行一个 while 循环，直到准确定位正确节点（因为有可能多重数组嵌套）
+	if (result.is_array() && isLeaf) {
+
+		while (result.is_array()) {
+			result = result[0];
+		}
+		result = result[*(v->end() - 1)];
 	}
 
 	return result;
 
 }
 
-string parameterLine(vector<string>::iterator& iter, vector<string>* v, GenerateDocument<my_json>* Gd) {
+string parameterLine(vector<string>::iterator& iter, vector<string>* v, GenerateDocument<my_json>* Gd, bool isLeaf) {
 
 	my_json* example = Gd->getExample();
 	my_json tempjson;// 使用 tempjson 来获取key表达的值
 	string result;
 	
 
-
 	// 获取该条规则最终指向值
-	tempjson = get_(example, v);
-	
+	tempjson = get_(example, v, isLeaf);
+
 	result.append("|");
 	for (; iter < v->end(); )
 	{
@@ -99,7 +111,6 @@ string parameterLine(vector<string>::iterator& iter, vector<string>* v, Generate
 
 
 	if (Gd->getFieldConfig()->contains(*(iter - 1))) { // 能在json中找到索引
-
 		result.append(Gd->getFieldConfig()->at(*(iter - 1)));
 	}
 	else {
@@ -111,13 +122,12 @@ string parameterLine(vector<string>::iterator& iter, vector<string>* v, Generate
 	return result;
 }
 // 打印函数
-static void stdlog(void* arg) {
+static void stdlog(void* arg, bool isLeaf) {
 	GenerateDocument<my_json>* gd = (GenerateDocument<my_json>*) arg;
 	auto v = *gd->getVeclist();
 	auto iter = v.begin();
-
-
-	string str = parameterLine(iter,&v,gd);
+	
+	string str = parameterLine(iter, &v, gd, isLeaf);
 	*gd->getOutfile() << str.c_str() << endl;// 写入文件
 };
 
@@ -126,13 +136,14 @@ static void stdlog(void* arg) {
 
 int main(){
 	
-
-
-
-
+	system("chcp 1258");
 
 	GenerateDocument<my_json> gd(stdlog);
+
 	gd.start();
+
+
+
 
 	return 0;
 

@@ -88,13 +88,14 @@ void analysisJson<T, C>::recursion(T* jsondata,C* Gd) {
 	}
 	else {
 
+	
 		structCall(Gd);// 调用一次回调函数
 
 		for (auto& i : jsondata->items()) {
 
 	
 			tempj = &(i.value());// 临时 json 结构值发生变化
-
+	
 
 			if (jsondata->is_object()) {
 
@@ -102,8 +103,7 @@ void analysisJson<T, C>::recursion(T* jsondata,C* Gd) {
 
 				if (tempj->is_string() || tempj->is_number_integer() || tempj->is_null()) {// 到达一个叶子（没有子成员的）节点
 
-					structCall(Gd);// 调用一次回调函数
-
+					structCall(Gd, true);// 调用一次回调函数
 					Gd->getVeclist()->pop_back();// 弹出最近添加进容器的一个成员
 				}
 
@@ -120,23 +120,25 @@ void analysisJson<T, C>::recursion(T* jsondata,C* Gd) {
 
 			if (tempj->is_array())// 数组
 			{
-
+				//std::cout << "====================" << std::endl;
+				//std::cout << (*tempj)[0].dump(4) << std::endl;
+				//std::cout << Gd->getVeclist()->back() << std::endl;
 				vectemp = *Gd->getVeclist();// 此处应该保留vector容器状态
 				vectemp.pop_back();// 移除最新添加的一个成员
 				recursion(&(*tempj)[0], Gd);// 递归数组第一个成员
+
 				Gd->getVeclist()->clear();// 递归数组完成之后清除容器
 				*Gd->getVeclist() = vectemp;// 恢复
 			}
 		}
-	
 	}
 }
 
 template<typename T, typename C>
-void analysisJson<T, C>::structCall(C* Gd)
+void analysisJson<T, C>::structCall(C* Gd, bool isLeaf)
 {
 	if (!Gd->getVeclist()->empty()) {
-		(*Gd->getStructCallback())(Gd);// callback
+		(*Gd->getStructCallback())(Gd, isLeaf);// callback
 	}
 }
 

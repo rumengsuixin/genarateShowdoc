@@ -139,13 +139,13 @@ void GenerateDocument<T>::parseAndWrite(callback cb) {
 	// 检测行内是否有替换的参数
 	if (isContain(&flush)) {
 		int type;
-		//std::string temp;
+		
 		std::smatch result;
 		std::string::const_iterator iter_begin = flush.cbegin();
-		std::string::const_iterator iter_end = flush.cend();
+		//std::string::const_iterator iter_end = flush.cend();
 
 		// 循环正则匹配 一直到没有结果
-		while (regex_search(iter_begin, iter_end, result, *pattern)) {
+		while (regex_search(iter_begin, flush.cend(), result, *pattern)) {
 			//temp.append(result.prefix());
 			outfile << result.prefix(); // 写入本条匹配结果的前一段内容
 			type = (int)(*config)[result[1]]["type"];

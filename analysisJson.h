@@ -4,7 +4,7 @@
 
 // callback
 
-using callback = void(*) (void* arg);
+using callback = void(*) (void* arg, bool isLeaf);
 
 using namespace nlohmann;
 
@@ -40,7 +40,7 @@ public:
 	void recursion(T* jsondata, C* Gd);
 	void recursion(T* jsondata);
 
-	void structCall(C* Gd);
+	void structCall(C* Gd, bool isLeaf = false);
 
 
 private:

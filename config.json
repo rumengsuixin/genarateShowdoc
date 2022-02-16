@@ -1,0 +1,32 @@
+{
+	"list": {
+		"title": {
+			"type": 1,
+			"value": "资讯详情"
+		},
+		"method": {
+			"type": 1,
+			"value": "anything"
+		},
+		"sourceUrl": {
+			"type": 1,
+			"value": "http://ynysxy01.com/cockclub/new?id=1"
+		},
+		"requestParameter": {	
+			"type": 1,
+			"value": ""
+		},
+		"example": {
+			"type": 4,
+			"value": {}
+		},
+		"returnParameter": {
+			"type": 3,
+			"value": ""
+		},
+		"remarks": {
+			"type": 1,
+			"value": "无"
+		}
+	}
+}
